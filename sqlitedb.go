@@ -23,7 +23,6 @@ func InitDb() {
 	}
 
 func SaveToDb(msgId int, usrId int64) {
-	
 	statement, err := database.Prepare("INSERT INTO msg2usr (msgId, usrId) VALUES (?, ?)")
 	errorPrint("SaveToDb prepare:", err)
 	_, err = statement.Exec(msgId, usrId)
@@ -43,9 +42,11 @@ func SearchInDb(targetId int) int64 {
 		err = rows.Scan(&msgId, &usrId)
 		errorPrint("Loop, rows.Scan", err)
 		if msgId == targetId {
+			rows.Close()
 			return usrId
 		}
 	}
+	rows.Close()
 	return ownerID
 }
 
