@@ -34,6 +34,7 @@ func SaveToDb(msgId int, usrId int64) { // Problem HERE
 }
 
 func SearchInDb(targetId int) int64 {
+	mutex.Lock()
 	rows, err := database.Query("SELECT msgId, usrId FROM msg2usr")
 	errorPrint("SearchInDb() Query:", err)
 
@@ -44,9 +45,11 @@ func SearchInDb(targetId int) int64 {
 		err = rows.Scan(&msgId, &usrId)
 		errorPrint("Loop, rows.Scan", err)
 		if msgId == targetId {
+			mutex.Unlock()
 			return usrId
 		}
 	}
+	mutex.Unlock()
 	return ownerID
 }
 
