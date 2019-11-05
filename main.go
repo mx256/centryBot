@@ -1,4 +1,4 @@
-/*              Sentry Bot                */ 
+/*              Sentry Bot                */
 /*   Protect your real telegramm account  */
 
 package main
@@ -12,9 +12,9 @@ type Bot struct {
 	tgApi *tg.BotAPI
 }
 
-const botToken = ""     // YOUR TELEGRAM BOT TOCKEN; SEE @BotFather 
-const ownerID = 00000000// YOUR ACCOUNT ID; SEE @userinfobot 
-                // (dont confuse with same adress crypto chanell)
+const botToken = ""      // YOUR TELEGRAM BOT TOCKEN; SEE @BotFather
+const ownerID = 00000000 // YOUR ACCOUNT ID; SEE @userinfobot
+// (dont confuse with same adress crypto chanell)
 
 func main() {
 
