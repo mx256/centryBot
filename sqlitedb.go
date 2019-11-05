@@ -3,13 +3,13 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	//"sync" // experiments with mutex - failed
+	"sync" // experiments with mutex - failed
 	_ "github.com/mattn/go-sqlite3"
 )
 
 
 var database *sql.DB
-
+var mutex sync.Mutex
 func InitDb() {
 	var err error
 	database, err = sql.Open("sqlite3", "./idStorage.db")
@@ -23,14 +23,14 @@ func InitDb() {
 
 func SaveToDb(msgId int, usrId int64) { // Problem HERE
 	// var mutex sync.Mutex
-	// mutex.Lock()
+	 mutex.Lock()
 	
 	statement, err := database.Prepare("INSERT INTO msg2usr (msgId, usrId) VALUES (?, ?)")
 	errorPrint("SaveToDb prepare:", err)
 	_, err = statement.Exec(msgId, usrId)
 	errorPrint("SaveToDb Exec:", err)
 	
-	/*mutex.Unlock()*/
+	mutex.Unlock()
 }
 
 func SearchInDb(targetId int) int64 {
