@@ -3,38 +3,42 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"sync" // experiments with mutex - failed
+	// "sync" // experiments with mutex - failed
 	_ "github.com/mattn/go-sqlite3"
 )
 
 
 var database *sql.DB
-var mutex sync.Mutex
+// var mutex sync.Mutex
 func InitDb() {
 	var err error
 	database, err = sql.Open("sqlite3", "./idStorage.db")
 	// defer database.Close() - segfault when uncomm... idk wtf
 	errorPrint("Database open file error:", err)
-	statement, err := database.Prepare("CREATE TABLE IF NOT EXISTS msg2usr (msgId INTEGER PRIMARY KEY, usrId INTEGER)")
-	errorPrint("Database prepare, if file db not exist error:", err)
-	_, err = statement.Exec()
-	errorPrint("Database prepare Exec:", err)
-}
+	
+	database.SetConnMaxLifetime(0)
+	database.SetMaxOpenConns(100)
+	database.SetMaxIdleConns(100)
+		
+	
+	_, err = database.Exec("CREATE TABLE IF NOT EXISTS msg2usr (msgId INTEGER PRIMARY KEY, usrId INTEGER)")
+	errorPrint("database.Exec:", err)
+	}
 
 func SaveToDb(msgId int, usrId int64) { // Problem HERE
 	// var mutex sync.Mutex
-	 mutex.Lock()
+	// mutex.Lock()
 	
 	statement, err := database.Prepare("INSERT INTO msg2usr (msgId, usrId) VALUES (?, ?)")
 	errorPrint("SaveToDb prepare:", err)
 	_, err = statement.Exec(msgId, usrId)
 	errorPrint("SaveToDb Exec:", err)
 	
-	mutex.Unlock()
+	// mutex.Unlock()
 }
 
 func SearchInDb(targetId int) int64 {
-	mutex.Lock()
+	// mutex.Lock()
 	rows, err := database.Query("SELECT msgId, usrId FROM msg2usr")
 	errorPrint("SearchInDb() Query:", err)
 
@@ -45,11 +49,11 @@ func SearchInDb(targetId int) int64 {
 		err = rows.Scan(&msgId, &usrId)
 		errorPrint("Loop, rows.Scan", err)
 		if msgId == targetId {
-			mutex.Unlock()
+			// mutex.Unlock()
 			return usrId
 		}
 	}
-	mutex.Unlock()
+	// mutex.Unlock()
 	return ownerID
 }
 
