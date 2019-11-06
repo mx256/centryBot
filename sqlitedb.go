@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"database/sql"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
@@ -29,7 +30,7 @@ func SaveToDb(msgId int, usrId int64) {
 	statement.Close()
 }
 
-func SearchInDb(targetId int) int64 {
+func SearchInDb(targetId int) (int64, error) {
 
 	rows, err := database.Query("SELECT msgId, usrId FROM msg2usr")
 	errorPrint("SearchInDb() Query:", err)
@@ -42,11 +43,11 @@ func SearchInDb(targetId int) int64 {
 		errorPrint("Loop, rows.Scan", err)
 		if msgId == targetId {
 			rows.Close()
-			return usrId
+			return usrId, nil
 		}
 	}
 	rows.Close()
-	return ownerID
+	return usrId, errors.New("Autor not found")
 }
 
 func errorPrint(comment string, err error) {

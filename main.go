@@ -55,14 +55,14 @@ func (Hub *Bot) msgHub(msg *tg.Message) {
 			Hub.tgApi.Send(missReply)
 			return
 		}
-		searchResult := SearchInDb(msg.ReplyToMessage.MessageID)
-		if searchResult == int64(ownerID) {
-			missMsg := tg.NewMessage(int64(ownerID), "Не найден автор сообщения")
+		searchResult, err := SearchInDb(msg.ReplyToMessage.MessageID)
+		if err != nil {
+			missMsg := tg.NewMessage(int64(ownerID), "Не найден автор сообщения")//en: missing autor of message
 			missMsg.ReplyToMessageID = msg.MessageID
 			Hub.tgApi.Send(missMsg)
 			return
 		}
-		msgFromOwn := tg.NewMessage(SearchInDb(msg.ReplyToMessage.MessageID), msg.Text) //Read usrID in db
+		msgFromOwn := tg.NewMessage(searchResult, msg.Text) //Read usrID in db
 		Hub.tgApi.Send(msgFromOwn)
 	}
 }
