@@ -16,8 +16,8 @@ func Test_SaveToDb(t *testing.T) {
 	}
 	for key, val := range m {
 		SaveToDb(key, val)
-		read := SearchInDb(key)
-		if read != m[key] {
+		read, err := SearchInDb(key)
+		if read != m[key] || err != nil {
 			t.Error()
 		}
 	}
