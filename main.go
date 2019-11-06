@@ -74,8 +74,7 @@ func (tlgrm *Bot) UniSender(usrId int64, msg *tg.Message, msgReply int) {
 			stickerMsg.ReplyToMessageID = msgReply
 		}
 		tlgrm.Api.Send(stickerMsg)
-	}
-	if msg.Photo != nil {
+	} else if msg.Photo != nil {
 		photoSize := *msg.Photo
 		photoMsg := tg.NewPhotoShare(usrId, photoSize[0].FileID)
 		photoMsg.Caption = msg.Caption
@@ -83,41 +82,36 @@ func (tlgrm *Bot) UniSender(usrId int64, msg *tg.Message, msgReply int) {
 			photoMsg.ReplyToMessageID = msgReply
 		}
 		tlgrm.Api.Send(photoMsg)
-	}
-	if msg.Video != nil {
+	} else if msg.Video != nil {
 		videoMsg := tg.NewVideoShare(usrId, msg.Video.FileID)
 		videoMsg.Caption = msg.Caption
 		if msgReply != 0 {
 			videoMsg.ReplyToMessageID = msgReply
 		}
 		tlgrm.Api.Send(videoMsg)
-	}
-	if msg.Animation != nil {
+	} else if msg.Animation != nil {
 		msgFromOwn := tg.NewMessage(int64(ownerID), "Animation is not supported yet")
 		tlgrm.Api.Send(msgFromOwn)
-	}
-	if msg.Audio != nil {
+	} else if msg.Audio != nil {
 		msgFromOwn := tg.NewMessage(int64(ownerID), "Audio is not supported yet")
 		tlgrm.Api.Send(msgFromOwn)
-	}
-	if msg.VideoNote != nil {
+	} else if msg.VideoNote != nil {
 		msgFromOwn := tg.NewMessage(int64(ownerID), "Videonote is not supported yet")
 		tlgrm.Api.Send(msgFromOwn)
-	}
-	if msg.Voice != nil {
+	} else if msg.Voice != nil {
 		msgFromOwn := tg.NewMessage(int64(ownerID), "Voice is not supported yet")
 		tlgrm.Api.Send(msgFromOwn)
-	}
-	if msg.Contact != nil {
+	} else if msg.Contact != nil {
 		msgFromOwn := tg.NewContact(usrId, msg.Contact.PhoneNumber, msg.Contact.FirstName)
 		tlgrm.Api.Send(msgFromOwn)
-	}
-	if msg.Location != nil {
+	} else if msg.Location != nil {
 		msgFromOwn := tg.NewLocation(usrId, msg.Location.Latitude, msg.Location.Longitude)
 		tlgrm.Api.Send(msgFromOwn)
-	}
-	if msg.Text != "" {
+	} else if msg.Text != "" {
 		msgFromOwn := tg.NewMessage(usrId, msg.Text)
+		tlgrm.Api.Send(msgFromOwn)
+	} else {
+		msgFromOwn := tg.NewMessage(int64(ownerID), "Unknown message type")
 		tlgrm.Api.Send(msgFromOwn)
 	}
 }
